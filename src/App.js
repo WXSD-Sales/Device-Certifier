@@ -1,25 +1,74 @@
-import logo from './logo.svg';
+import react from 'react';
+import axios from 'axios';
+import queryString from 'querystring';
+import moment from 'moment';
+import {AUTHORIZATION_URL, CLIENT_ID, CLIENT_SECRET, REDIRECT_URL, WEBEX_AUTH_URL, GRANT_TYPE, REFRESH_GRANT_TYPE} from './constants';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends react.Component {
+  constructor() {
+    super();
+    this.token = JSON.parse(localStorage.getItem('token'));
+    this.state = {
+      isAuthenticated: false
+    };
+  }
+
+  async componentDidMount() {
+    if(this.token) {
+      if (moment(localStorage.getItem('expiration_date')).diff(moment.utc()) > 0) {
+        this.setState({isAuthenticated: true});
+      } else {
+        this.requestForToken(this.token.refresh_token, true);
+      }
+    } else {
+      const code = new URLSearchParams(window.location.search).get("code");
+      if(code) {
+        await this.requestForToken(code);
+      } else {
+        window.location.href = AUTHORIZATION_URL;
+      }
+    }
+  }
+  
+  async componentWillUnmount() {}
+
+  async requestForToken(code, isExpired=false) {
+    const body = isExpired ? {
+        refresh_token: code,
+        grant_type: REFRESH_GRANT_TYPE,
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET
+    } : {
+        code,
+        redirect_uri: REDIRECT_URL,
+        grant_type: GRANT_TYPE,
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET
+    };
+    console.log(body)
+    try {
+      const {data} = await axios.post(WEBEX_AUTH_URL, queryString.stringify(body), 
+      {
+        headers: { 
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      });
+      const startDate = moment.utc();
+      const expirationDate = startDate.add(Number(data.expires_in), 'seconds');
+      
+      this.token = data;
+      localStorage.setItem('token', JSON.stringify(data));
+      localStorage.setItem('expiration_date', expirationDate.format());
+      this.setState({isAuthenticated: true});
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  
+  render() {
+    return  this.state.isAuthenticated && <div>Authenticated</div>
+  }
 }
 
 export default App;
