@@ -1,6 +1,6 @@
 const path = require('path');
-
-const { app, BrowserWindow } = require('electron');
+const fs = require('fs');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
 
 function createWindow() {
@@ -17,7 +17,7 @@ function createWindow() {
   // win.loadFile("index.html");
   win.loadURL(
     isDev
-      ? 'https://device-certifier.ngrok.io'
+      ? 'http://device-certifier.ngrok.io'
       : `file://${path.join(__dirname, '../build/index.html')}`
   );
   // Open the DevTools.
