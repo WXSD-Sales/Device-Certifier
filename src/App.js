@@ -3,18 +3,24 @@ import axios from 'axios';
 import queryString from 'querystring';
 import moment from 'moment';
 import {AUTHORIZATION_URL, CLIENT_ID, CLIENT_SECRET, REDIRECT_URL, WEBEX_AUTH_URL, GRANT_TYPE, REFRESH_GRANT_TYPE} from './constants';
-import './App.css';
+import Content from './Content';
+import BackgroundImg from './BackgroundImg';
+import './App.css';;
 
 class App extends react.Component {
   constructor() {
     super();
     this.token = JSON.parse(localStorage.getItem('token'));
     this.state = {
-      isAuthenticated: false
+      isAuthenticated: true
     };
   }
 
   async componentDidMount() {
+    // await this.authorize();
+  }
+  
+  async authorize() {
     if(this.token) {
       if (moment(localStorage.getItem('expiration_date')).diff(moment.utc()) > 0) {
         this.setState({isAuthenticated: true});
@@ -30,9 +36,7 @@ class App extends react.Component {
       }
     }
   }
-  
-  async componentWillUnmount() {}
-
+ 
   async requestForToken(code, isExpired=false) {
     const body = isExpired ? {
         refresh_token: code,
@@ -46,7 +50,7 @@ class App extends react.Component {
         client_id: CLIENT_ID,
         client_secret: CLIENT_SECRET
     };
-    console.log(body)
+
     try {
       const {data} = await axios.post(WEBEX_AUTH_URL, queryString.stringify(body), 
       {
@@ -67,7 +71,11 @@ class App extends react.Component {
   }
   
   render() {
-    return  this.state.isAuthenticated && <div>Authenticated</div>
+    return  this.state.isAuthenticated && 
+    <div className="flex justify-center items-center h-full">
+      {/* <BackgroundImg /> */}
+      <Content />
+    </div>
   }
 }
 
