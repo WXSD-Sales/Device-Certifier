@@ -8,6 +8,7 @@
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.24.0",
+    "crypto": "^1.0.1",
     "fs": "0.0.1-security",
     "moment": "^2.29.1",
     "path": "^0.12.7",
@@ -24,7 +25,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "dev": "concurrently -k \"BROWSER=none npm start\" \"npm:electron\"",
-    "electron": "wait-on tcp:3000 && electron ."
+    "electron": "wait-on tcp:3000 && electron .",
+    "node-dev": "concurrently -k \"BROWSER=none npm start\" \"npm:electron-dev\"",
+    "electron-dev": "wait-on tcp:3000 && nodemon --exec npx electron ."
   },
   "eslintConfig": {
     "extends": [
@@ -47,9 +50,11 @@
   "devDependencies": {
     "autoprefixer": "^10.4.0",
     "concurrently": "^6.4.0",
+    "crypto-browserify": "^3.12.0",
     "electron": "^16.0.4",
     "electron-is-dev": "^2.0.0",
     "eslint-config-airbnb": "^19.0.2",
+    "nodemon": "^2.0.15",
     "postcss": "^8.4.5",
     "tailwindcss": "^3.0.6",
     "wait-on": "^6.0.0"

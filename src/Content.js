@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import crpyto from 'crypto';
 import Table, { SelectColumnFilter } from './Table';
 import xAPI from './xAPI';
 import './Content.css';
@@ -67,7 +68,7 @@ const Content = function () {
     const newArray = rows.map((row) => {
       const values = row.split(delim);
       const eachObject = headers.reduce((obj, header, i) => {
-        obj[header] = values[i];
+        obj[header] = values[i].trim();
         return obj;
       }, {});
 
@@ -77,10 +78,25 @@ const Content = function () {
     setCsvArray(newArray);
   };
 
-  const uploadCertsAndKeys = () => {
-    const xapi = new xAPI('192.168.254.37', 'admin', 'adminadmin');
-    console.log(xapi)
-    xapi.connect();
+  const uploadCertsAndKeys = async () => {
+    try {
+
+      for(let device of csvArray) {
+        console.log(device)
+        const xapi = new xAPI(device.address, device.username, device.password, device.cert, device.key);
+        await xapi.connect();
+        await xapi.addCertAndKey();
+        var fingerprint = crypto.createHash('sha512').update(device.key).digest('hex');
+        console.log(fingerprint)
+        console.log(await xapi.listServices());
+        console.log(`Uploaded: ${device.address}, ${device.username}, ${device.password}, ${device.key}, ${device.cert}`)
+
+      }
+  
+      
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

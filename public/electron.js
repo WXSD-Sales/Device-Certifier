@@ -1,7 +1,16 @@
-const path = require('path');
-const fs = require('fs');
 const { app, BrowserWindow, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
+const fs = require('fs');
+
+
+ipcMain.on('send-file-name', (event, args) => {
+  //execute tasks on behalf of renderer process 
+  const body = JSON.parse(args);
+  const key = fs.readFileSync(body.key, 'utf8');
+  const cert = fs.readFileSync(body.cert, 'utf8');
+
+  event.reply('get-file-content', JSON.stringify({key: key, cert: cert}))
+})
 
 function createWindow() {
   // Create the browser window.
@@ -10,6 +19,8 @@ function createWindow() {
     height: 800,
     webPreferences: {
       nodeIntegration: true,
+      enableRemoteModule:true,
+      contextIsolation: false
     },
   });
 
@@ -17,7 +28,7 @@ function createWindow() {
   // win.loadFile("index.html");
   win.loadURL(
     isDev
-      ? 'http://device-certifier.ngrok.io'
+      ? 'http://localhost:3000'
       : `file://${path.join(__dirname, '../build/index.html')}`
   );
   // Open the DevTools.
