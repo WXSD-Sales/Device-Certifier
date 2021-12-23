@@ -5,7 +5,7 @@ import moment from 'moment';
 import {AUTHORIZATION_URL, CLIENT_ID, CLIENT_SECRET, REDIRECT_URL, WEBEX_AUTH_URL, GRANT_TYPE, REFRESH_GRANT_TYPE} from './constants';
 import Content from './Content';
 import BackgroundImg from './BackgroundImg';
-import './App.css';;
+import './App.css';
 
 class App extends react.Component {
   constructor() {

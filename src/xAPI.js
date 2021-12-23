@@ -1,43 +1,48 @@
 
-const {
-  contextBridge,
-  ipcRenderer
-} = require("electron");
+const { ipcRenderer } = window.require("electron");
+
+
 export default class xAPI {
-  constructor(address, username, password) {
+  constructor(address, username, password, keyPath, certPath) {
     this.address= address;
     this.username = username;
     this.password = password;
+    this.keyPath = keyPath;
+    this.certPath = certPath;
+    this.api = null;
   }
 
-  connect() {
-    const x = `ws://${this.address}`;
-    console.log(x)
-    window.jsxapi.connect(`ws://${this.address}`, {
-      username: this.username,
-      password: this.password
-    })
-    .on('error', console.error)
-    .on('ready', async (xapi) => {
-      console.log(xapi);
-      try {
+  async connect() {
+    return new Promise((resolve, reject) => {
+      window.jsxapi.connect(`ws://${this.address}`, {
+        username: this.username,
+        password: this.password
+      })
+      .on('error', reject)
+      .on('ready', (xapi) => {
+        this.api = xapi;
 
-        const reader = new FileReader();
-        reader.onload = (event) => {
+        resolve();
+      })
+    });
+  }
 
-        }
-        // const privateKey = fs.readFileSync('/Users/akoushke/key.pem');
-        // const certificate = fs.readFileSync('/Users/akoushke/certificate.pem');
-        // console.log(privateKey, certificate)
-        // const key = await reader.getText('/Users/akoushke/key.pem');
-        // const cert = await reader.getText('/Users/akoushke/certificate.pem');
+  getCredentials(callback) {
+    ipcRenderer.on('get-file-content', callback);
 
-        // console.log(key, cert);
-        await xapi.Command.Security.Certificates.Services.Add();
-      } catch(error) {
-        console.log(error);
-      }
-    })
+    ipcRenderer.send('send-file-name', JSON.stringify({key: this.keyPath, cert: this.certPath}));
+  }
+
+  async addCertAndKey() {
+    this.getCredentials(async (event, args) => {
+      const {key, cert} = JSON.parse(args);
+
+      return this.api.Command.Security.Certificates.Services.Add(`${cert}${key}`);
+    });
+  } 
+  
+  async listServices() {
+    return this.api.Command.Security.Certificates.Services.Show();
   }
 
   async disconnect() {}
