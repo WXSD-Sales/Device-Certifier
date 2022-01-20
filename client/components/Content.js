@@ -3,6 +3,7 @@ import Table, { SelectColumnFilter, StatusPill } from './Table';
 import Button from './Button';
 import Modal from './Modal';
 import Device from './Device';
+import ClientIPCDevice  from '../ipc/device';
 import './Content.css';
 import getData from './Data';
 
@@ -82,7 +83,7 @@ const Content = function () {
         return obj;
       }, {});
 
-      return new Device(eachObject.address, eachObject.username, eachObject.password, eachObject.key, eachObject.cert);
+      return new ClientIPCDevice(eachObject.address, eachObject.username, eachObject.password, eachObject.key, eachObject.cert);
     });
 
     setDevices(newArray);
