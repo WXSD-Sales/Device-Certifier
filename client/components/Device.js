@@ -17,7 +17,7 @@ export default class Device {
 
   async connect() {
     return new Promise((resolve, reject) => {
-      window.jsxapi.connect(`ssh://${this.address}`, {
+      window.jsxapi.connect(`ws://${this.address}`, {
         username: this.username,
         password: this.password
       })
