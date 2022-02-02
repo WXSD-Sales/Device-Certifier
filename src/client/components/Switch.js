@@ -16,7 +16,7 @@ export default function Switch({label, purposes, setPurposes}) {
     <>
       <div className="flex flex-row w-[11rem] mr-5 items-center ">
         <div
-          className="md:w-[3.25rem] md:h-7 w-12 h-6 flex items-center bg-gray-400 rounded-full p-1 cursor-pointer"
+          className={`md:w-[3.25rem] md:h-7 w-12 h-6 flex items-center rounded-full p-1 cursor-pointer ${toggle ? 'bg-green-500' : 'bg-gray-400'}`}
           onClick={() => {
             setToggle(!toggle);
            

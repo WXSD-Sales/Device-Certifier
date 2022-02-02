@@ -32,11 +32,15 @@ export function StatusPill({ value }) {
     <span
       className={classNames(
         "px-3 py-1 uppercase leading-wide font-bold text-xs rounded-full shadow-sm",
-        status.startsWith("active") ? "bg-green-100 text-green-700" : null,
-        status.startsWith("connected") ? "bg-blue-100 text-blue-700" : null,
-        status.startsWith("added") ? "bg-yellow-100 text-yellow-700" : null,
+        status.startsWith("connected") ? "bg-green-100 text-green-700" : null,
+        status.startsWith("activated") ? "bg-green-100 text-green-700" : null,
+        status.startsWith("added") ? "bg-green-100 text-green-700" : null,
+        status.startsWith("rebooted") ? "bg-green-100 text-green-700" : null,
+        status.startsWith("rebooting") ? "animate-pulse bg-yellow-100 text-yellow-700" : null,
+        status.startsWith("waiting") ? "animate-pulse bg-orange-100 text-orange-700" : null,
         status.startsWith("inactive") ? "bg-gray-100 text-gray-700" : null,
-        status.startsWith("failed") ? "bg-red-100 text-red-700" : null
+        status.startsWith("ready") ? "bg-blue-100 text-blue-700" : null,
+        status.startsWith("failed") ? "bg-red-100 text-red-700" : null,
       )}
     >
       {status}
