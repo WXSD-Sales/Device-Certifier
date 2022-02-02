@@ -3,20 +3,13 @@ import Table, { SelectColumnFilter, StatusPill } from './Table';
 import Button from './Button';
 import Modal from './Modal';
 import Device from './Device';
-import ClientIPCDevice  from '../ipc/device';
+import * as CONST from '../constants';
+import {activateCertsOnDevices, abortJobs}  from '../ipc/devices';
 import './Content.css';
 import getData from './Data';
 
-const Content = function () {
-  const [csvFile, setCsvFile] = useState(null);
-  const [devices, setDevices] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [purposes, setPurposes] = useState([]);
-  const [showEnable, setShowEnable] = useState(false);
-  const [disableConnect, setDisableConnect] = useState(false);
-  const [disableShowEnable, setDisableShowEnable] = useState(false);
-  const columns = useMemo(
+const useColumns = () => {
+  return useMemo(
     () => [
       {
         Header: 'Address',
@@ -32,11 +25,11 @@ const Content = function () {
       },
       {
         Header: 'Key File Path',
-        accessor: 'keyPath',
+        accessor: 'key',
       },
       {
         Header: 'Cert File Path',
-        accessor: 'certPath',
+        accessor: 'cert',
       },
       {
         Header: "Status",
@@ -46,6 +39,17 @@ const Content = function () {
     ],
     [],
   );
+};
+
+
+const Content = function () {
+  const [csvFile, setCsvFile] = useState(null);
+  const [devices, setDevices] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [purposes, setPurposes] = useState([]);
+  const [disableButtons, setDisableButtons] = useState(false);
+  const columns = useColumns();
 
   useEffect(() => {
     if(!showModal) setPurposes([])
@@ -83,84 +87,98 @@ const Content = function () {
         return obj;
       }, {});
 
-      return new ClientIPCDevice(eachObject.address, eachObject.username, eachObject.password, eachObject.key, eachObject.cert);
+      eachObject.status = "ready";
+      return eachObject;
     });
 
     setDevices(newArray);
   };
 
-  const uploadCertsAndKeys = async () => {
-    const newArray = [];
-    setShowEnable(true);
+  const changeStatus = (event, args) => {
+    const {status, deviceID} = args;
 
-    for(let device of devices) {
-      try {
-        await device.addCertAndKey();
+    const device = devices.filter((device) => device.address === deviceID)[0];
+    const deviceIndex = devices.findIndex(device => device.address === deviceID);
 
-        device.status = 'added';
-
-      } catch (error) {
-        device.status = 'failed'
-      }
-      
-      newArray.push(device);
+    switch(status) {
+      case CONST.CONNECTION_ON_SUCCESS:
+        device.status = "connected";
+        devices[deviceIndex] = device;
+        break;
+      case CONST.CONNECTION_ON_FAIL:
+        device.status = "failed";
+        devices[deviceIndex] = device;
+        break;
+      case CONST.ADD_CERT_KEY_ON_SUCCESS:
+        device.status = "added";
+        devices[deviceIndex] = device;
+        break;
+      case CONST.ADD_CERT_KEY_ON_FAIL:
+        device.status = "failed";
+        devices[deviceIndex] = device;
+        break;
+      case CONST.ACTIVATE_CERT_ON_SUCCESS:
+        device.status = "activated";
+        devices[deviceIndex] = device;
+        break;
+      case CONST.ACTIVATE_CERT_ON_FAIL:
+        device.status = "inactive";
+        devices[deviceIndex] = device;
+        break;
+      case CONST.REBOOTING:
+        device.status = "rebooting";
+        devices[deviceIndex] = device;
+        break;
+      case CONST.REBOOTED:
+        device.status = "rebooted";
+        devices[deviceIndex] = device;
+        break;
+      case CONST.DISCONNECTION_ON_SUCCESS:
+        break;
+      case CONST.DISCONNECTION_ON_FAIL:
+        device.status = "failed";
+        devices[deviceIndex] = device;
+        break;
+      case CONST.JOBS_START:
+        setDisableButtons(true);
+        break;
+      case CONST.JOBS_END:
+        setDisableButtons(false);
+        break;
+      default:
+        break;
     }
-    
-    setDevices(newArray)
-  };
 
-  const enableCerts = async () => {
-    const newDevices = [];
-    setDisableShowEnable(true);
-
-    for(let device of devices) {
-      for (let purpose of purposes) {
-        try {
-          await device.enableCert(purpose);
-          device.purposes.push(purpose);
-          device.status = 'active';
-        } catch(e) {
-          device.status = 'failed';
-          console.log(e);
-        }
-      };
-
-      newDevices.push(device);
-    }
-
-    setDevices(newDevices);
-  };
-
-  const connect = async () => {
-    const newArray = [];
-    setDisableConnect(true);
-
-    for(let device of devices){
-      try {
-        await device.connect();
-        device.status = 'connected';
-        newArray.push(device);
-      }
-      catch(e) {
-        console.log(e)
-      }
-    };
-
-    setDevices(newArray);
+    setDevices([...devices]);
   }
 
-  const button = showEnable ? 
-                <Button
-                  children="Enable Certs"
-                  disabled={disableShowEnable}
-                  pill="rounded-full"
-                  onClick={() => {setShowModal(true)}}
-              /> : <Button
-                    children="Upload Certs"
-                    disabled={disableShowEnable}
-                    pill="rounded-full"
-                    onClick={() => { uploadCertsAndKeys(); }}
-               />;
+  const enableCerts = () => {
+    setShowModal(true);
+    
+    if(showModal) {
+      const endpoints = {};
+
+      for(let endpoint of devices){
+        endpoint.purposes = purposes;
+        endpoints[endpoint.address] = endpoint;
+        endpoint.status = "waiting"
+      }
+
+      setDevices([...devices])
+      activateCertsOnDevices(endpoints, changeStatus);
+    }
+  };
+
+  const cancelJob = () => {
+    if(disableButtons) {
+      abortJobs(() => {
+        setDisableButtons(false);
+      })
+    } else {
+      setCsvFile(null); 
+      setDevices([]);
+    }
+  };
 
   return (
     <div className="absolute z-1">
@@ -185,17 +203,17 @@ const Content = function () {
             <div className="flex justify-end mt-5">
               <Button
                 children="Remove CSV File"
+                disabled={disableButtons}
                 pill="rounded-full"
                 variant="danger"
-                onClick={() => {setCsvFile(null); setDevices([]); setDisableConnect(false)}}
+                onClick={() => {cancelJob()}}
                 />
               <Button
-                children="Connect"
-                disabled={disableConnect}
-                pill="rounded-full"
-                onClick={() => {connect()}}
-                />
-              {button}
+                  children="Activate Certs"
+                  disabled={disableButtons}
+                  pill="rounded-full"
+                  onClick={() => { enableCerts(); }}
+               />
             </div>
           </>
       ) :  
