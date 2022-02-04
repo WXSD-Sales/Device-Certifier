@@ -2,7 +2,6 @@ import { useMemo, useState, useEffect } from 'react';
 import Table, { SelectColumnFilter, StatusPill } from './Table';
 import Button from './Button';
 import Modal from './Modal';
-import Device from './Device';
 import * as CONST from '../constants';
 import {activateCertsOnDevices, abortJobs}  from '../ipc/devices';
 import './Content.css';

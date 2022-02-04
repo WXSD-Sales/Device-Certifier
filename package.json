@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "main": "public/electron.js",
+  "homepage": "./",
   "license": "MIT",
   "dependencies": {
     "@headlessui/react": "^1.4.2",
@@ -33,15 +34,16 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && npm run electron-build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "dev": "concurrently -k \"BROWSER=none npm start\" \"npm:electron\"",
     "electron": "wait-on tcp:3000 && electron .",
     "node-dev": "concurrently -k \"BROWSER=none npm start\" \"npm:electron-dev\"",
     "electron-dev": "wait-on tcp:3000 && nodemon --exec npx electron .",
-    "electron-build": "electron-builder",
-    "release": "npm run build && electron-builder --publish=always"
+    "release": "npm run build && electron-builder --publish=always",
+    "postinstall": "electron-builder install-app-deps",
+    "electron:build": "npm run build && electron-builder -mw"
   },
   "eslintConfig": {
     "extends": [
@@ -65,6 +67,7 @@
     "autoprefixer": "^10.4.0",
     "concurrently": "^6.4.0",
     "electron": "^16.0.4",
+    "electron-build": "^0.0.3",
     "electron-builder": "^22.14.5",
     "eslint-config-airbnb": "^19.0.2",
     "nodemon": "^2.0.15",

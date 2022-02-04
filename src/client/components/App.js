@@ -4,7 +4,6 @@ import queryString from 'querystring';
 import moment from 'moment';
 import {AUTHORIZATION_URL, CLIENT_ID, CLIENT_SECRET, REDIRECT_URL, WEBEX_AUTH_URL, GRANT_TYPE, REFRESH_GRANT_TYPE} from './constants';
 import Content from './Content';
-import BackgroundImg from './BackgroundImg';
 import './App.css';
 
 class App extends react.Component {
@@ -73,7 +72,6 @@ class App extends react.Component {
   render() {
     return  this.state.isAuthenticated && 
     <div className="flex justify-center items-center h-full">
-      {/* <BackgroundImg /> */}
       <Content />
     </div>
   }

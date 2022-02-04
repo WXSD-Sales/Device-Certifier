@@ -2,6 +2,7 @@ const {ipcMain } = require('electron');
 const CONST = require('../constants');
 const { fork } = require("child_process");
 const qjobs = require('qjobs');
+const path = require('path');
 
 const MAX_NUM_PROCESSES = 5;
 const queue = new qjobs({maxConcurrency: MAX_NUM_PROCESSES});
@@ -10,7 +11,8 @@ const runTheQueue = (devices, cb) => {
   const keys = Object.keys(devices);
 
   const activateCertJob = function(args,next) {
-    const child = fork("", [JSON.stringify(args[0])]);
+    const child = fork(path.join(__dirname, '../deviceAgent.js'), [JSON.stringify(args[0])]);
+    // const child = fork(path.join(__dirname, ''), [JSON.stringify(args[0])]);
 
     child.on('message', (data) => {
       const {status, deviceID} = data;

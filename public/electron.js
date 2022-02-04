@@ -1,7 +1,8 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const isDev = require('electron-is-dev');
-// require(`../src/server`);
+
+require(`./server`);
 
 function createWindow() {
   // Create the browser window.
@@ -9,12 +10,12 @@ function createWindow() {
     width: 1400,
     height: 1000,
     webPreferences: {
-      nodeIntegration: true,
-      enableRemoteModule:true,
-      contextIsolation: false,
+      nodeIntegration: false, 
+      contextIsolation: true,
+      enableRemoteModule: false,
+      preload: path.resolve(__dirname, './preload.js')
     },
   });
-
 
   // and load the index.html of the app.
   // win.loadFile("index.html");
