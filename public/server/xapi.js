@@ -18,7 +18,7 @@ class Device {
   }
 
   connect(callback) {
-    jsxapi.connect(`wssaå://${this.address}`, {
+    jsxapi.connect(`wss://${this.address}`, {
       username: this.username,
       password: this.password
     })
