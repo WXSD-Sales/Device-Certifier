@@ -55,7 +55,8 @@
 
 ### How to use
 
-The executables In this demo we show how to add and enable service certificates to Webex devices. In order to test this POC successfully, You need to follow the steps below:
+The executables to install the app locally are available [here]( https://github.com/WXSD-Sales/Devices-Manager/releases) for you to download.
+In this demo we show how to add and enable service certificates to Webex devices. In order to test this POC successfully, You need to follow the steps below:
 
  - There must be Webex Device (Desk Mini or Room Devices) available in the same network that you are running this app in
  - This app requires CSV file which contains the following information:
