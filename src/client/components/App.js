@@ -16,6 +16,7 @@ class App extends react.Component {
   }
 
   async componentDidMount() {
+    // Authentication is not required
     // await this.authorize();
   }
   

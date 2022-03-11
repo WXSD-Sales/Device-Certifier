@@ -57,40 +57,51 @@ const Content = function () {
 
   const data = useMemo(() => getData(), []);
   const uploadCSV = (file) => {
-    const reader = new FileReader();
+    try{
+      const reader = new FileReader();
+  
+      reader.onload = (event) => {
+        const text = event.target.result;
+        processCSV(text);
+      };
 
-    reader.onload = (event) => {
-      const text = event.target.result;
-      processCSV(text);
-    };
+      setCsvFile(file);
+      reader.readAsText(file);
 
-    setCsvFile(file);
-    reader.readAsText(file);
+      console.info('Read the file successfully!');
+    } catch(error) {
+      console.error(`Unable to read the file - ${file}`);
+    }
   };
 
   const processCSV = (str, delim = ',') => {
-    let headers = str.slice(0, str.indexOf('\n')).split(delim);
-    const rows = str.slice(str.indexOf('\n') + 1).split('\n');
-
-    // Trim the last element
-    headers[headers.length - 1] = headers[headers.length - 1].trim();
-
-    // Lowercase the property keys
-    headers = headers.map((header) => header.toLowerCase());
-
-    // Array of CSV data
-    const newArray = rows.map((row) => {
-      const values = row.split(delim);
-      const eachObject = headers.reduce((obj, header, i) => {
-        obj[header] = values[i].trim();
-        return obj;
-      }, {});
-
-      eachObject.status = "ready";
-      return eachObject;
-    });
-
-    setDevices(newArray);
+    try {
+      let headers = str.slice(0, str.indexOf('\n')).split(delim);
+      const rows = str.slice(str.indexOf('\n') + 1).split('\n');
+  
+      // Trim the last element
+      headers[headers.length - 1] = headers[headers.length - 1].trim();
+  
+      // Lowercase the property keys
+      headers = headers.map((header) => header.toLowerCase());
+  
+      // Array of CSV data
+      const newArray = rows.map((row) => {
+        const values = row.split(delim);
+        const eachObject = headers.reduce((obj, header, i) => {
+          obj[header] = values[i].trim();
+          return obj;
+        }, {});
+  
+        eachObject.status = "ready";
+        return eachObject;
+      });
+  
+      setDevices(newArray);
+      console.info('Processed the file successfully');
+    } catch (e) {
+      console.error(`Unable to process the file - ${str}`);
+    }
   };
 
   const changeStatus = (event, args) => {
@@ -177,6 +188,8 @@ const Content = function () {
       setCsvFile(null); 
       setDevices([]);
     }
+
+    console.info('Canceled Jobs Successfully');
   };
 
   return (

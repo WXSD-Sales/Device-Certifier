@@ -12,12 +12,18 @@ const runTheQueue = (devices, cb) => {
 
   const activateCertJob = function(args,next) {
     const child = fork(path.join(__dirname, '../deviceAgent.js'), [JSON.stringify(args[0])]);
-    // const child = fork(path.join(__dirname, ''), [JSON.stringify(args[0])]);
+    console.info(`Forked a child for the endpoint ${JSON.stringify(args[0])}`);
 
     child.on('message', (data) => {
       const {status, deviceID} = data;
 
       if(status === CONST.REBOOTED || status === CONST.CONNECTION_ON_FAIL) {
+        if(status === CONST.REBOOTED) {
+          console.info(`Job ended successfully for device ${deviceID}`);
+        } else {
+          console.error(`Job failed for device ${deviceID}`);
+        }
+
         child.kill();
         next();
       }
@@ -28,6 +34,7 @@ const runTheQueue = (devices, cb) => {
 
   for(const key of keys) {
     queue.add(activateCertJob, [devices[key]]);
+    console.info(`Added device ${devices[key]} to the queue`);
   }
 
   queue.on('start',function() {cb(CONST.JOBS_START, {status: CONST.JOBS_START})});
@@ -36,6 +43,7 @@ const runTheQueue = (devices, cb) => {
   queue.on('jobEnd',function(args) {});
 
   queue.run();
+  console.info('Run the Queue');
 }
 
 ipcMain.on(CONST.ACTIVATE_CERTS, async (event, args) => {
@@ -43,6 +51,7 @@ ipcMain.on(CONST.ACTIVATE_CERTS, async (event, args) => {
   const {devices} = body;
 
   runTheQueue(devices, event.reply);
+  console.info('Received endpoints information' - args);
 });
 
 ipcMain.on(CONST.ABORT_JOBS, (event, args) => {
