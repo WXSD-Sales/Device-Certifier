@@ -1,4 +1,3 @@
-[![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
@@ -9,10 +8,10 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <h2 align="center">Webex Presence</h2>
+  <h2 align="center">Device Certifier</h2>
 
   <p align="center">
-  subscribe to others presence statuses using Webex SDK internal plugin! 
+  Connect and Enable Third Party Service Certificates On Devices With a Desktop App 
     <br />
     <a href="https://github.com/WXSD-Sales/Devices-Manager"><strong>Explore the docs »</strong></a>
     <br />
