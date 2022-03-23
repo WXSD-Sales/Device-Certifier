@@ -1,5 +1,5 @@
 {
-  "name": "device_certifier",
+  "name": "device_certificate_manager",
   "version": "0.1.0",
   "private": true,
   "main": "public/electron.js",
@@ -68,7 +68,7 @@
     "concurrently": "^6.4.0",
     "electron": "^16.0.4",
     "electron-build": "^0.0.3",
-    "electron-builder": "^22.14.5",
+    "electron-builder": "23.0.2",
     "eslint-config-airbnb": "^19.0.2",
     "nodemon": "^2.0.15",
     "postcss": "^8.4.5",

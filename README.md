@@ -8,7 +8,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <h2 align="center">Device Certifier</h2>
+  <h2 align="center">Device Certificate Manager</h2>
 
   <p align="center">
   Connect and Enable Third Party Service Certificates On Devices With a Desktop App 
