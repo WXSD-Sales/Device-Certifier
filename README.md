@@ -1,10 +1,3 @@
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![Release][release-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
@@ -23,6 +16,8 @@
     <a href="https://github.com/WXSD-Sales/Devices-Manager/issues">Request Feature</a>
   </p>
 </p>
+
+*_Everything included is for demo and Proof of Concept purposes only. Your use of the site is solely at your own risk. This site may contain links to third party content, which we do not warrant, endorse, or assume liability for. These demos are for Cisco Webex usecases, but are not Official Cisco Webex Branded demos._
 
 <!-- TABLE OF CONTENTS -->
 <details open="open">
@@ -64,7 +59,7 @@ In this demo we show how to add and enable service certificates to Webex devices
      - Click [here](https://www.suse.com/support/kb/doc/?id=000018152) to learn more on how to create a pair of private certificate and key.
    - CSV file MUST contain the following format displayed in the picture:
    ![production-screenshot](images/devices.png)
-### Built With
+### Depdencies
 
 - [Webex Browser SDK](https://github.com/webex/webex-js-sdk)
 - [React](https://reactjs.org)
